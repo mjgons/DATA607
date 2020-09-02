@@ -1,0 +1,68 @@
+---
+title: "Gonsalves"
+author: "Gonsalves"
+date: "8/30/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Steak Preference in the USA
+
+Website FiveThirtyEight published an article, <https://fivethirtyeight.com/features/how-americans-like-their-steak/> about how Americans like to eat their steak.  The article looked if risk-averse people like their steak well done, yet the author of the article was unable to find a correlation.   
+
+```{r FiveThirtyEight Steak}
+library(RCurl)
+steakSurveyRawData <- getURL("https://raw.githubusercontent.com/fivethirtyeight/data/master/steak-survey/steak-risk-survey.csv") 
+
+steakSurveyFile <- data.frame(read.csv(text = steakSurveyRawData, header=TRUE))
+
+
+```
+
+## Rename Column Names
+Renaming column names to make it more legible.  
+
+```{r rename}
+colnames(steakSurveyFile) <- c("ID", "Lottery", "Smoke", "Alcohol", "Gamble", "Skydive", "Speed", "Cheat", "Eat Steak", "How Prepared", "Gender", "Age", "Income", "Education", "Region")
+```
+
+## Subset the Data Frame
+Removing columns and row to focus the data.
+
+```{r Subset}
+steakSurveyReduced <- data.frame(steakSurveyFile$ID, steakSurveyFile$"Eat Steak", steakSurveyFile$"How Prepared", steakSurveyFile$Cheat, steakSurveyFile$Skydive)
+steakSurveyReduced2 <- steakSurveyReduced[2:551, ] # Removed row 1 which had bad data
+colnames(steakSurveyReduced2) <-c("ID", "Eat Steak", "How Prepared", "Cheat on Spouse", "Skydive") 
+```
+
+## How many people like steak?
+Seeing how many eat steak.
+
+```{r Like Steak}
+
+summary(steakSurveyReduced2$"Eat Steak")
+
+```
+## How do people like it prepared?
+Finding out how people like it prepared.
+
+```{r Preparred}
+
+summary(steakSurveyReduced2$"How Preparred")
+
+```
+
+## Conclusion
+
+The survey data showed that 109 People didn't eat steak while 430 people did eat stak. 166 people liked their steak prepared medium rate while only 23 like it rare. I would like to revisit the study and compare it to people who like fish and see if people like their fish and steak prepared the same way.
+
+
+```{r Conclusion}
+summary(steakSurveyReduced2)
+```
+
+
+
