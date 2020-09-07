@@ -1,0 +1,79 @@
+---
+title: "MarkGonsalvesAssignment2"
+author: "Mark Gonsalves"
+date: "9/6/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Overview of Project
+
+1) I first mocked up a survey template in Excel. 
+
+<https://github.com/mjgons/DATA607/blob/master/.github/workflows/Movie%20Reviews%20Survey%20Template.xlsx>
+
+2) Then I created a survey using google forms and emailed it out.
+<https://docs.google.com/forms/d/e/1FAIpQLSeBOS6qeF43XUcsD6271HWFjzZ1HS7GzhfE_GMUKqI-9-y5IA/viewform?vc=0&c=0&w=1&flr=0>
+The survey includes an option for "unknown" if a person hasn't watched the movie.  The survey requries a response to all questions so there won't be missing data.  
+
+3) I exported the survey from google forms to a CSV file on my computer.
+<https://github.com/mjgons/DATA607/blob/master/.github/workflows/Movie%20Reviews.csv>
+
+4) I cleaned up the data in excel and saved it as a CSV file. 
+
+5) I uploaded the cleaned CSV file to my GitHub account.
+
+<https://github.com/mjgons/DATA607/blob/master/.github/workflows/Movie%20Reviews%20Clean.csv>
+
+6) I then created the table in MySQLWorkbench and populated the table.
+
+Everything else is in the code below:
+
+
+
+```{r}
+library(tidyverse)
+library(RMySQL)
+library(DBI)
+```
+
+## Importing SQL into R and working with the data
+
+I'm connecting the SQL database to R Studio.  Looking at the data and then creating a new dataframe called db.  
+
+
+
+```{r}
+moviedb <- DBI::dbConnect(RMySQL::MySQL(), dbname = "Movies", user="root", port=3306, host='localhost', password="******")
+
+dbListTables(moviedb)
+glimpse(moviedb)
+
+class(dbGetQuery(moviedb,"SHOW TABLES"))
+dbGetQuery(moviedb, "SHOW TABLES")
+dbGetQuery(moviedb, "EXPLAIN MovieSurvey")
+
+db <-dbGetQuery(moviedb, "SELECT * FROM MovieSurvey")
+
+colnames(db) <-c("ID", "First Name", "Last Name", "Star Wars", "Sonic", "Trolls", "Onward", "Spider-Man", "Mulan") 
+head(db)
+
+
+```
+
+## Conclusion
+
+The data shows that Becka hasn't watched Sonic.  Most people enjoyed Sonic with 1 score of 5, 1 score of 4, 2 scores of 3 and 1 score of 1.  Thus I would recommend Becka watches Sonic with her kids Josh and Justin while I do my homework.
+
+
+```{r}
+#install.packages("kableExtra")
+library(knitr)
+library(kableExtra)
+kable(db[1:6,2:9 ], caption = "Movie Reviews") %>%
+kable_styling(bootstrap_options = c('striped', 'hover', 'responsive', 'condensed'))
+```
+
