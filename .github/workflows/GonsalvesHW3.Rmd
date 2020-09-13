@@ -1,0 +1,98 @@
+---
+title: "MarkGonsalvesHW3"
+author: "Mark Gonsalves"
+date: "9/12/2020"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Part 1
+College Majors
+
+```{r}
+library(tidyverse)
+library(RCurl)
+CollegeM <- getURL("https://raw.githubusercontent.com/fivethirtyeight/data/master/college-majors/majors-list.csv") 
+collegeMajors <- data.frame(read.csv(text = CollegeM, header=TRUE))
+head(collegeMajors)
+
+collegeMajors %>%
+  filter(str_detect(collegeMajors$Major, "STATISTICS|DATA"));
+```
+
+## Part 2
+
+Transformation
+```{r}
+x <- c("bell pepper", "bilberry", "blackberry","blood orange","blueberry","cantaloupe","chili pepper", "cloudberry", "elderberry", "lime", "lychee", "mulberry", "olive", "salal berry")
+x
+
+str_c(c(x), collapse = ", ")
+
+```
+## Part 3
+
+```{r}
+x <- c("apple", "banana", "kiki", "pear","Mississippi","azzzbra", "abaca", "baba", "abba", "ababa", "abbcccddddcccbba")
+```
+
+"(.)\1\1"
+This will look for a character that is the same three times in a row.  
+
+```{r}
+str_view(x,"(.)\\1\\1", match = TRUE)
+```
+
+
+"(.)(.)\\2\\1"
+This will find where the is a character followed by a pair of characters and then the same character at the beginning.  For Mississippi, it is finding the "issi" pattern.
+
+```{r}
+str_view(x, "(.)(.)\\2\\1", match = TRUE)
+```
+"(..)\1"
+This will look for repeated patterns like "baba".
+
+```{r}
+str_view(x, "(..)\\1", match = TRUE)
+```
+"(.).\\1.\\1"
+This will look for a character and then another character then the 1st character again and then another character and then the first character again.
+```{r}
+str_view(x, "(..)\\1", match = TRUE)
+```
+"(.)(.)(.).*\\3\\2\\1"
+This expression looks for three characters and then any in between and then the same characters in reverse order. For example, "ississi" in Mississippi.
+```{r}
+str_view(x, "(.)(.)(.).*\\3\\2\\1", match = TRUE)
+```
+
+## Part 4
+
+```{r}
+y <- c("apple", "banana", "kiki", "pear","Mississippi","azzzbra", "abaca", "baba", "abba", "ababa", "abbcccddddcccbba", "church", "eleven")
+```
+
+
+Start and end with the same character: Uses the anchors of ^ at the beginning of the string and $ at the end of the string.
+```{r}
+str_subset(y, "^(.)((.*\\1$)|\\1?$)")
+
+```
+
+Contain a repeated pair of letters: searches through the string to look whre there is a repeating pattern of combined letters such as "kiki".
+```{r}
+str_subset(y, "([A-Za-z][A-Za-z]).*\\1")
+
+```
+
+Contain one letter repeated in at least 3 places:  Searches throught the letters searching for a letter that is used 3 times.
+```{r}
+str_subset(y, "([a-z]).*\\1.\\1")
+
+```
