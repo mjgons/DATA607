@@ -1,0 +1,78 @@
+---
+title: "Chess"
+author: ""
+date: "9/18/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+
+
+```
+
+## Importing the Chess file into R.
+` 
+```{r}
+#import data into R
+chessTable <- read_lines(file="tournamentinfo.txt", skip = 1) 
+#check class of table
+class(chessTable)
+#take a quick look at the data.frame
+head(chessTable, 15)
+
+```
+
+## Pulling out the necessary data
+
+```{r}
+# Getting the Player's number
+playerNumber <- as.integer(str_extract(chessTable[seq(5, 195,by = 3)], "\\d+"))
+head(playerNumber, 10)
+
+# Getting the Player's Names
+playerName <- str_replace_all(str_extract(chessTable[seq(4, 195, 3)],"([|]).+?\\1"),"[|]","")
+head(playerName, 10)
+
+# Getting the Player's State/Province
+playerLocation <- str_extract(chessTable[seq(5, 195,by = 3)], "[A-Z]{2}")
+head(playerLocation, 10)
+
+#Getting the Player's Rating
+playerRating <- as.integer(str_replace_all(str_extract_all(chessTable[seq(5, 195,by = 3)], "R: \\s?\\d{3,4}"), "R:\\s",""))
+head(playerRating, 10)
+
+#Getting the Player's Points
+playerPoints <- str_extract(chessTable[seq(4, 195, 3)], "\\d.\\d")
+head(playerPoints, 10)
+
+```
+
+## Next we need to calculate each opponets average pre chess rating.
+
+```{r}
+
+preRatingOpp <- 1
+
+
+
+```
+## Now we can combine all the data into the final format
+
+```{r}
+
+finalChessTable <- data.frame(playerName, playerLocation, playerPoints, playerRating, preRatingOpp)
+head(finalChessTable)
+
+```
+## Finally, we put it into a file to be ready by SQL
+
+```{r write file}
+
+write.csv(finalChessTable, file="newchesstable.csv")
+
+
+```
+
