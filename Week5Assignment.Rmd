@@ -1,0 +1,141 @@
+---
+title: "Airlines"
+author: "MG"
+date: "9/26/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+
+## Tidying and Transforming Data
+This assignment is about creating a csv file and then transforming the data to provide analysis on two airlines flight perfmance on key Western airports.
+
+```{r}
+
+```
+
+
+
+## Create the .csv file
+
+My first step was to create the data file in Excel and save it as a csv file.
+
+https://github.com/mjgons/DATA607/blob/master/Book1.csv
+
+
+```{r}
+
+```
+## Import the .csv file
+
+I then imported the csv file into r.
+
+```{r}
+df <- read.csv("Book1.csv", header = TRUE)
+head(df)
+
+df2 <- as_tibble(df)
+head(df2)
+
+```
+## Transforming the data by going from wide to long
+
+Once the data was imported, it needed to be transformed in order to provide analysis.
+I'm flipping the data from wide to long in order to do calculations easier.
+
+```{r}
+df3 <- gather(df2, "Arrival City", "Flight Count", 3:7)
+  
+head(df3, 10)
+
+```
+## More Transforming the data by breaking out the Delayed and On Time columns so I can do additional cauculations.
+
+
+
+```{r}
+df4 <- spread(df3, "Flight.Status", "Flight Count")
+
+head(df4,10)
+```
+
+
+## I'm now going to add the total number of flighs by Arrival City and Airline and the on time rate.
+
+```{r}
+
+df5 <- df4 %>%
+  mutate("Total Flights" = (`Delayed` + `On Time`),
+         "On Time Rate" = (`On Time` / (`On Time` + `Delayed`))
+    
+  )
+
+head(df5,15)
+
+```
+
+
+## By Airline Overall
+
+Next it was time to look at the arrival delays of the two airlines by city and overall.  
+
+
+Alaska Airlines Total Flights and On Time Rate
+We can see that Alaska Airlines had 3,775 total flights and an on time rate of 88.8%
+```{r}
+#Alaska Airlines Total Flights and On Time Rate
+df5 %>%
+  filter(`Airline` == "Alaska") %>%
+  summarise(total = sum(`Total Flights`), OnTimeRate = mean(`On Time Rate`))
+
+```
+
+AM West had nearly double the flights as 7,225 flights and an on time rate that was below Alaska at 82.2%.
+
+```{r}
+#AM West Total Flights and On Time Rate
+df5 %>%
+  filter(`Airline` == "AM West") %>%
+  summarise(total = sum(`Total Flights`), OnTimeRate = mean(`On Time Rate`))
+```
+## By City Overall
+
+Sorting (arrange) by city allows us to easily compare the on time rates by arrival city.  We see that Alaska had a better average on time rates in all five cities in this data set.  
+
+```{r}
+
+df5 %>%
+  arrange(`Arrival City`)
+
+```
+
+## On Time Rates by Airline by City
+
+```{r}
+
+ggplot(data = df5) + 
+  geom_point(mapping = aes(x = `Airline`, y = `On Time Rate`)) + 
+  facet_wrap(~ `Arrival City`, nrow = 2) +
+  labs(title = "On Time Rates by Airline by City") +
+  theme_bw()
+
+
+
+
+```
+
+
+
+
+
+## Conclusion
+
+The data clearly shows that Alaska Airlines had better on time rates at all five cities.  It's 88.8% on time rate was ahead of AM West's on time rate of 82.2%.  San Francisco had the worst on time rate overall of the five airports.   
+
+```{r}
+
+```
