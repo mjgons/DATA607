@@ -1,0 +1,238 @@
+---
+title: "Week 6 Project 2"
+author: "MG"
+date: "10/3/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+# Dataset 1
+This data set is from Shana's Airline Safety post.
+
+The data is located at: https://raw.githubusercontent.com/fivethirtyeight/data/master/airline-safety/airline-safety.csv
+
+
+The analysis asked for is to sort and compare the number of airlines and their fatalities given to see any trends there.
+
+The first step is to import the csv file from the website where the data is located and create a dataset out of it.
+
+```{r}
+df <- read.csv("https://raw.githubusercontent.com/fivethirtyeight/data/master/airline-safety/airline-safety.csv", header = TRUE)
+head(df)
+
+df2 <- as_tibble(df)
+head(df2)
+```
+#### Creating new data columns to consolidate the data
+I'm creating 3 new columns to aggregate the data. Total Incidents, Total Fatal Accidents and Total Fatalities are the three new columns created with the mutate function.
+
+```{r}
+df3 <- mutate(df2, totalIncidents = (incidents_85_99 + incidents_00_14), totalAccidents = (fatal_accidents_85_99 + fatal_accidents_00_14), totalFatalities = (fatalities_85_99 + fatalities_00_14))
+head(df3)
+```
+Now that we have the  new columns of data, we will now transform it from "wide" to something that is easier the use in **R**.
+
+```{r}
+df4 <- gather(df3, "Situations", "Situation Count", 3:11)
+head(df4, 10)
+
+
+
+```
+
+Now that we had the data in a "long" format in **R**, we'll look to answer the questions.  First we will sort it by airline as requested. Then we'll pull out the data for Total Fatalities.
+
+```{r}
+df4 %>%
+  arrange(`airline`)
+
+df4 %>%
+  filter(`Situations` == "totalFatalities")
+  
+```
+Now that we have the Total Fatalities pulled out, we'll graph the data to see which airlines have alot of fatalities and which airlines have very few fatalities.
+```{r}
+df5 <- 
+  select(df4, "airline", "Situation Count") %>%
+  rename("Fatalities" = "Situation Count",
+         "Airlines" = "airline")
+
+head(df5)
+
+#We have the data but now we'll reorder it so it's hightest fatalities to least fatalities
+
+#df5$Airlines <-
+#fct_rev(df5$Airlines)
+      
+
+ggplot(data = df5, aes(y = Airlines, x = Fatalities)) +
+geom_line() + theme(axis.text = element_text(color = "grey50", size = 4))
+    
+
+
+```
+The graph shows that China airlines had the most fatalities by far.
+
+
+# Dataset 2
+
+This data set is from Rachel's "Who eats the food we grow?" post.
+
+The data is located at: https://www.kaggle.com/dorbicycle/world-foodfeed-production
+https://www.kaggle.com/dorbicycle/world-foodfeed-production/download
+
+But since you have to login to get the data, I have also placed it at:
+https://github.com/mjgons/DATA607/blob/master/FAO.csv
+
+The question to answer was, "I think the most interesting thing to do would be to figure out if feed has overtaken food in any areas or food items."
+
+The first step is to import the csv file from the website where the data is located and create a dataset out of it.
+
+```{r}
+data1 <- read.csv("FAO.csv", header = TRUE)
+#converting it to a tibble
+data2 <- as_tibble(data1)
+head(data2)
+
+
+
+```
+Now that we have the data, we need to convert it from "wide" to "long" to be able to do analysis on it in **R**.  I'm using the "pivot_longer" function this time instead of the "gather" function.
+
+```{r}
+data3 <-
+  data2 %>%                    
+  pivot_longer(
+    starts_with("y"), 
+    names_to = "year",  
+    values_to = "tonnes1k"             
+)
+head(data3)
+```
+Now we will separate the year to remove the leading "Y" from the year.
+
+```{r}
+data4 <-
+  data3 %>% 
+  separate(
+    col = year,
+    into = c("Y", "year"),
+    sep = "Y",
+    convert = TRUE
+)
+
+head(data4)
+
+```
+Let's now remove columns we don't need in the dataset
+
+
+```{r}
+data5 <- data4
+data5 <- select(data4, -1:-2)
+data5 <- select(data5, -2:-4)           
+data5 <- select(data5, -3:-5)
+data5 <- select(data5, -3)
+head(data5)
+summary(data5)
+
+```
+
+Now, let's plot Food and Feed and see the overall amount produced by year.
+```{r}
+
+ggplot(data5, aes(x = year, y = tonnes1k)) +
+geom_line() 
+  
+```
+
+Now lets look at a specific country
+```{r}
+data6 <- data5 
+data6 <- filter(data6, Area == "Afghanistan", Element == "Feed")
+
+ggplot(data6, aes(x = year, y = tonnes1k)) +
+geom_line() 
+
+```
+
+
+
+```{r}
+data7 <- data5
+data7 <- filter(data7, Area == "Afghanistan", Element == "Food")
+
+ggplot(data7, aes(x = year, y = tonnes1k)) +
+geom_line() 
+
+
+```
+
+We can see for Afghanistan that in no year did Feed overtake Food.
+
+```{r}
+
+```
+
+#Dataset 3
+
+
+This dataset is based on post by Richard on Broadband Services within NYS. 
+
+The dataset is located at: https://data.ny.gov/api/views/sjc6-ftj4/rows.csv
+
+The analysis asked to look at the municipalities that have lower rates of broadband and the number of housing units affected.
+
+The first step is to import the csv file from the website where the data is located and create a dataset out of it.
+
+```{r}
+nys1 <- read.csv("https://data.ny.gov/api/views/sjc6-ftj4/rows.csv", header = TRUE)
+head(nys1)
+
+nys2 <- as_tibble(nys1)
+head(nys2)
+
+
+```
+Now we'll remove the columns not needed.
+
+```{r}
+nys3 <- nys2
+nys3 <- select(nys3, (-24))
+nys3 <- select(nys3, (-23))                              
+nys3 <- select(nys3, (-21))  
+nys3 <- select(nys3, (-20)) 
+nys3 <- select(nys3, (-18)) 
+nys3 <- select(nys3, (-17)) 
+nys3 <- select(nys3, (-15)) 
+nys3 <- select(nys3, (-14)) 
+nys3 <- select(nys3, (-12)) 
+nys3 <- select(nys3, (-11)) 
+nys3 <- select(nys3, (-9)) 
+head(nys3)
+
+```
+Now we are going to find the maximum number of broadband households in each city/town/village.
+```{r}
+
+nys4 <- nys3
+nys4 %>%
+  rowwise() %>%
+  mutate(max = max(X..Hse.Units.Cable, X..Hse.Units.DSL, X..Hse.Units.Fiber, X..Hse.Units.Wireline, X..Hse.Units.Wireless))
+
+head(nys4)
+```
+Now that we have the maximum value by area we can now calculate the broadband percentage by area.
+```{r}
+#nys5 <- nys4 %>%
+#   mutate("BBpct" = (`max` / `X2010.Muni.Population`))
+
+
+
+```
+
+
