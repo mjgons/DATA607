@@ -1,0 +1,24 @@
+{
+    "books": {
+        "book": [
+	        {
+                "Title": "I Live for This: Baseball's Last True Believer",
+		        "Author": "Bill Plaschke, Tommy Lasorda",
+		        "Publisher": "Houghton Mifflin Harcourt",
+		        "Pages": "256"
+            },
+            {
+		        "Title": "If These Walls Could Talk: San Jose Sharks",
+		        "Author": "Dan Rusanowsky, Ross McKeon",
+		        "Publisher": "Triumph Books",
+		        "Pages": "320"
+            },
+	        {
+		        "Title": "The San Jose Earthquakes: A Seismic Soccer Legacy",
+		        "Author": "Gary Singh",
+		        "Publisher": "History Press Library Editions",
+		        "Pages": "146"
+            }
+        ]
+    }
+}
