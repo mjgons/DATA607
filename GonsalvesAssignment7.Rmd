@@ -1,0 +1,62 @@
+---
+title: "Assignment 7"
+author: "MG"
+date: "10/10/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(RCurl)
+library(XML)
+library(jsonlite)
+
+```
+
+## Week 7 Working with XML and JSON in R
+
+Our assignment this week is the choose 3 books (I'm choosing sports books) and include the title, author(s) and two attributes of my choosing.  I will then create three separate files in teh HTML, XML, and JSON file formats and post them to my github.  Finally, I will write R code and load the three separate files from github and compare the three imported dataframes to see if they are identical.
+
+## Pulling in the HTML code
+
+```{r}
+bookhtml <- "https://raw.githubusercontent.com/mjgons/DATA607/master/Data607Books.html"
+bookhtml2 <- getURL(bookhtml)
+bookhtml3 <- readHTMLTable(bookhtml2, header=TRUE)
+bookhtml3
+
+```
+
+## Pulling in the XML code
+
+
+```{r}
+bookxml <- "https://raw.githubusercontent.com/mjgons/DATA607/master/Data607Books.xml"
+bookxml2 <- getURL(bookxml)
+bookxml3 <- xmlToDataFrame(bookxml2)
+bookxml3
+ 
+
+
+```
+
+## Pulling in the JSON code
+
+```{r}
+
+bookjson <- "https://raw.githubusercontent.com/mjgons/DATA607/master/Data607Books2.json"
+bookjson2 <- getURL(bookjson)
+bookjson3 <- fromJSON(bookjson2)
+bookjson3
+
+```
+
+## Conclusion
+
+I created the 3 filetypes: HTML, XML, and JSON by hand as I've never worked with these filetypes before.  I then pushed the files to github and then pulled them into R.
+
+The dataframes all look similar.  I have a $‘NULL‘ in the html file but other than that, they all look the same.
+
+
+
